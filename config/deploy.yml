@@ -1,0 +1,54 @@
+# Name of your application. Used to uniquely configure containers.
+service: arca-ferreteria-scabuzzo
+
+# Name of the container image.
+image: fpscabuzzoarca/arca-api-services
+
+# Deploy to these servers.
+servers:
+  web:
+    - fpscabuzzo.ar
+  # job:
+  #   hosts:
+  #     - 192.168.0.1
+  #   cmd: bin/jobs
+
+proxy:
+  ssl: true
+  host: arca.fpscabuzzo.ar
+  app_port: 3000
+
+# Credentials for your image host.
+registry:
+  username:
+    - KAMAL_REGISTRY_USER
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+env:
+  clear:
+    DATABASE_HOST: arca-ferreteria-scabuzzo-db
+    DATABASE_NAME: arca_ferreteria_scabuzzo_production
+  secret:
+    - DATABASE_USER
+    - DATABASE_PASS
+    - AUTH_TOKEN
+    - ENCRYPTION_SERVICE_SALT
+
+accessories:
+  db:
+    image: postgres:12.22
+    host: fpscabuzzo.ar
+    port: 5432
+    env:
+      clear:
+        POSTGRES_USER: 'postgres'
+      secret:
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
+    files:
+      - db/production.sql:/docker-entrypoint-initdb.d/init.sql
+    directories:
+      - data:/var/lib/postgresql/data

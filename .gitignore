@@ -25,7 +25,9 @@
 config/secrets.yml.key
 config/secrets.yml
 config/application.yml
+
 .env
+.env.production
 
 /public/uploads/*
 
