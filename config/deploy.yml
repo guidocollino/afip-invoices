@@ -41,6 +41,8 @@ env:
     - HOST
     - SECRET_KEY_BASE
     - WSFE_URL
+    - LOGIN_URL
+    - PADRON_A5_URL
 
 accessories:
   db:
