@@ -12,10 +12,6 @@ module Afip
     def info
       response = afip.call(:get_persona_v2, message)
 
-      puts "-------------RESPONSE------------------"
-      puts response.inspect
-      puts "-------------RESPONSE------------------"
-
       response = response[:get_persona_v2_response][:persona_return]
 
       raise_response_error(response) if response[:error_constancia].present?
