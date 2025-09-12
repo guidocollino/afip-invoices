@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     get '/sale_points', to: 'static#sale_points'
     get '/tax_types', to: 'static#tax_types'
     get '/optionals', to: 'static#optionals'
+    get '/iva_receptor_types', to: 'static#iva_receptor_types'
     get '/dummy', to: 'static#is_working'
   end
 

@@ -34,6 +34,10 @@ module V1
       render json: StaticResource::Optionals.new(entity).call
     end
 
+    def iva_receptor_types
+      render json: StaticResource::IvaReceptorTypes.new(entity).call
+    end
+
     # rubocop:disable Naming/PredicateName
     def is_working
       head :ok

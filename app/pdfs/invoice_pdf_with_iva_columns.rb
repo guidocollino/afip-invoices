@@ -2,7 +2,7 @@
 
 require 'prawn/qrcode'
 
-class InvoicePdf < ToPdf
+class InvoicePdfWithIvaColumns < ToPdf
   MINIMUN_POSITION_TO_DISPLAY_NOTE = 130
   MINIMUN_POSITION_TO_DISPLAY_TOTALS = 300
 
@@ -225,7 +225,9 @@ class InvoicePdf < ToPdf
         'Uni. Med.',
         'Precio Unit.',
         '% Bonif.',
-        'Subtotal'
+        'Subtotal',
+        'Alíc. IVA',
+        'Subt. c/IVA',
       ],
     ]
 
@@ -240,7 +242,16 @@ class InvoicePdf < ToPdf
         item.metric_unit,
         number_with_precision(item.unit_price, precision: 2),
         number_with_precision(item.bonus_percentage, precision: 2),
-        number_with_precision(item_subtotal, precision: 2)
+        number_with_precision(item_subtotal, precision: 2),
+        if item.exempt?
+          'Exento'
+        else
+          (item.untaxed? ? 'No gravado' : item.iva_aliquot)
+        end,
+        number_with_precision(
+          item_subtotal * (1 + item.iva_aliquot / 100),
+          precision: 2,
+        ),
       ])
     end
 

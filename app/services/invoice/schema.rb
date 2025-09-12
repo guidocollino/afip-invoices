@@ -13,6 +13,7 @@ class Invoice
       concept_type_id: 'Tipo de concepto',
       recipient_type_id: 'Tipo de documento de comprador',
       recipient_number: 'Número de identificación de comprador',
+      recipient_iva_type_id: 'Condición IVA del receptor',
       bill_type_id: 'Tipo de comprobante',
       net_amount: 'Importe neto gravado',
       untaxed_amount: 'Importe neto no gravado',
