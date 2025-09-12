@@ -13,7 +13,7 @@ class Invoice
     FCE_SYSTEM_ID = '27'
 
     attr_accessor :sale_point_id, :concept_type_id, :recipient_type_id,
-      :recipient_number, :net_amount, :iva_amount, :untaxed_amount,
+      :recipient_number, :recipient_iva_type_id, :net_amount, :iva_amount, :untaxed_amount,
       :exempt_amount, :tax_amount, :iva, :taxes, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date,
       :associated_invoices, :items, :bill_number, :note, :cbu, :alias, :cuit, :transmission
@@ -45,6 +45,7 @@ class Invoice
               'Concepto' => concept_type_id,
               'DocTipo' => recipient_type_id,
               'DocNro' => recipient_number,
+              'CondicionIVAReceptorId' => recipient_iva_type_id,
               'CbteDesde' => bill_number,
               'CbteHasta' => bill_number,
               'CbteFch' => created_at,

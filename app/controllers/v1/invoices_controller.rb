@@ -28,7 +28,7 @@ module V1
     ].freeze
 
     INVOICE_PARAMS = [
-      :sale_point_id, :concept_type_id, :recipient_type_id,
+      :sale_point_id, :concept_type_id, :recipient_type_id, :recipient_iva_type_id,
       :recipient_number, :net_amount, :iva_amount, :untaxed_amount,
       :exempt_amount, :tax_amount, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date, :note,
