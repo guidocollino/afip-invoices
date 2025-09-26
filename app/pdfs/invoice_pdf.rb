@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'prawn/qrcode'
 
 class InvoicePdf < ToPdf
@@ -13,7 +11,7 @@ class InvoicePdf < ToPdf
 
   URL = 'https://www.afip.gob.ar/fe/qr/'
 
-  def initialize(invoice, invoice_data = nil)
+  def initialize(invoice, invoice_data = nil, copy_type = :original)
     super(top_margin: 70)
     @invoice        = invoice
     @entity         = invoice.entity
@@ -24,17 +22,19 @@ class InvoicePdf < ToPdf
     @bill_type      = bill_type(invoice.bill_type_id)
     @iva_types      = StaticResource::IvaTypes.new(@entity)
     @tax_types      = StaticResource::TaxTypes.new(@entity)
+    @copy_type      = copy_type
 
     @items = invoice.items
     @items = @items.order(:id) if invoice.persisted?
 
     repeat :all do
+      display_copy_type_header
       display_header
       display_footer if @invoice.authorization_code?
     end
 
     repeat :all, dynamic: true do
-      bounding_box [245, 105], width: bounds.width do
+      bounding_box [245, 60], width: bounds.width do
         number_pages 'Hoja <page> de <total>'
       end
     end
@@ -44,11 +44,25 @@ class InvoicePdf < ToPdf
 
   private
 
-  def display_header
-    stroke_rectangle [0, TOP], WIDTH, 160
-    stroke_rectangle [0, 590], WIDTH, 25
+  def display_copy_type_header
+    bounding_box([0, bounds.top], width: WIDTH, height: 30) do
+      text copy_type_label, 
+           align: :center, 
+           style: :bold, 
+           size: 16,
+           valign: :center
+      
+      stroke_bounds
+    end
+  end
 
-    bounding_box([WIDTH / 2 - 25, TOP], width: 50, height: 50) do
+  def display_header
+    header_top = TOP - 35
+    
+    stroke_rectangle [0, header_top], WIDTH, 160
+    stroke_rectangle [0, 590 - 35], WIDTH, 25
+
+    bounding_box([WIDTH / 2 - 25, header_top], width: 50, height: 50) do
       text_box(
         StaticResource::BillTypes::SHORT_NAMES[@bill_type.to_sym] || @bill_type,
         at: [1, cursor - 10],
@@ -63,14 +77,13 @@ class InvoicePdf < ToPdf
 
       move_down 40
 
-      # El ID del tipo de comprobante en la AFIP es el código del mismo
       text "COD. #{@invoice.bill_type_id.to_s.rjust(2, '0')}",
         align: :center, style: :bold, size: 9
 
       stroke_bounds
     end
 
-    bounding_box([0, TOP], width: 250, height: 70) do
+    bounding_box([0, header_top], width: 250, height: 70) do
       if @invoice.logo_url.present?
         image uploaded_file_path(@invoice.logo_url),
           fit: [220, 60],
@@ -81,7 +94,7 @@ class InvoicePdf < ToPdf
       end
     end
 
-    bounding_box([320, TOP], width: 220, height: 70) do
+    bounding_box([320, header_top], width: 220, height: 70) do
       text_box(
         bill_type_name,
         at: [0, cursor - 15],
@@ -117,52 +130,52 @@ class InvoicePdf < ToPdf
         size: 10
     end
 
-    bounding_box([10, 650], width: 250, height: 50) do
+    bounding_box([10, 650 - 35], width: 250, height: 50) do
       field 'Razón social', @entity.business_name
     end
 
-    bounding_box([10, 635], width: 260, height: 50) do
+    bounding_box([10, 635 - 35], width: 260, height: 50) do
       field 'Domicilio comercial', @entity.comertial_address
     end
 
-    bounding_box([10, 605], width: 250, height: 50) do
+    bounding_box([10, 605 - 35], width: 250, height: 50) do
       text "Condición frente al IVA: #{@entity.condition_against_iva}", style: :bold
     end
 
-    bounding_box([320, 650], width: 250, height: 50) do
+    bounding_box([320, 650 - 35], width: 250, height: 50) do
       field 'C.U.I.T.', @entity.cuit
     end
 
-    bounding_box([320, 630], width: 250, height: 50) do
+    bounding_box([320, 630 - 35], width: 250, height: 50) do
       field 'Ingresos Brutos', @entity.iibb
     end
 
-    bounding_box([320, 610], width: 250, height: 50) do
+    bounding_box([320, 610 - 35], width: 250, height: 50) do
       field 'Fecha de Inicio de Actividades', @entity.activity_start_date.try(:strftime, '%d/%m/%Y')
     end
 
-    bounding_box([10, 580], width: 490, height: 50) do
+    bounding_box([10, 580 - 35], width: 490, height: 50) do
       field 'Período Facturado Desde', @invoice_finder[:service_from]
     end
 
-    bounding_box([220, 580], width: 490, height: 50) do
+    bounding_box([220, 580 - 35], width: 490, height: 50) do
       field 'Hasta', @invoice_finder[:service_to]
     end
 
     if @invoice_finder[:due_date]
-      bounding_box([340, 580], width: 490, height: 50) do
+      bounding_box([340, 580 - 35], width: 490, height: 50) do
         field 'Fecha de Vto. para el pago', @invoice_finder[:due_date]
       end
     end
 
     if invoice_is_fce?
-      stroke_rectangle [0, 560], WIDTH, 25
+      stroke_rectangle [0, 560 - 35], WIDTH, 25
 
-      bounding_box([10, 550], width: 490, height: 50) do
+      bounding_box([10, 550 - 35], width: 490, height: 50) do
         field 'CBU', @invoice.cbu
       end
 
-      bounding_box([220, 550], width: 490, height: 50) do
+      bounding_box([220, 550 - 35], width: 490, height: 50) do
         field 'ALIAS', @invoice.alias || '--'
       end
     end
@@ -180,33 +193,33 @@ class InvoicePdf < ToPdf
         move_down 10
         field 'Condición frente al IVA', recipient[:category], size: 9
 
-        display_associated_invoices if invoice_is_note?
+        display_associated_invoices
       end
 
       stroke_bounds
     end
 
     stroke do
-      vertical_line 590, TOP - 50, at: WIDTH / 2
+      vertical_line 590 - 35, header_top - 50, at: WIDTH / 2
     end
 
     move_down 20
   end
 
   def display_associated_invoices
+    return unless @invoice.associated_invoices.present?
+
     items = @invoice.associated_invoices.map do |invoice|
-      "#{bill_type(invoice.bill_type_id)} #{invoice.receipt}"
+      "#{invoice.sale_point_id.to_s.rjust(4, '0')}-#{invoice.bill_number.to_s.rjust(8, '0')}"
     end
 
-    items.map! { |string| string.gsub('Factura', 'Fac') }
-
-    field 'Comp. Asoc.', items.join(', '), size: 9
+    field 'Remito', items.join(', '), size: 9
   end
 
   def display_items_and_totals
-    stretchy_cursor = invoice_is_fce? ? 460 : 480
+    stretchy_cursor = invoice_is_fce? ? 460 - 35 : 480 - 35
 
-    bounding_box([0, stretchy_cursor], width: 260, height: 380) do
+    bounding_box([0, stretchy_cursor], width: 540, height: 320) do
       display_items
 
       display_note if @invoice.note.present?
@@ -216,7 +229,6 @@ class InvoicePdf < ToPdf
   end
 
   def display_items
-    # attributes corresponding to an invoice of type "a"
     data = [
       [
         'Cód.',
@@ -281,9 +293,9 @@ class InvoicePdf < ToPdf
   def display_totals
     start_new_page if y < MINIMUN_POSITION_TO_DISPLAY_TOTALS
 
-    footer_starts_in = invoice_is_fce? ? 160 : 157
+    footer_starts_in = invoice_is_fce? ? 210 : 200
 
-    stroke_rectangle [0, footer_starts_in + 10], 540, 140
+    stroke_rectangle [0, footer_starts_in + 10], 540, 120
     data = [['Descripción', 'Alic.%', 'Importe']]
 
     if @taxes.present?
@@ -293,9 +305,9 @@ class InvoicePdf < ToPdf
       end
     end
 
-    bounding_box([10, footer_starts_in], width: 260, height: 180) do
+    bounding_box([10, footer_starts_in], width: 260, height: 110) do
       text 'Otros Tributos', style: :bold
-      table(data, width: 270, cell_style: { size: 7 }) do
+      table(data, width: 250, cell_style: { size: 7 }) do
         cells.borders = [:bottom]
         row(0).font_style = :bold
         row(0).background_color = 'E3DDDC'
@@ -307,7 +319,7 @@ class InvoicePdf < ToPdf
         size: 8
     end
 
-    bounding_box([300, footer_starts_in], width: 230, height: 160) do
+    bounding_box([280, footer_starts_in], width: 250, height: 110) do
       data_iva = []
 
       data_iva.insert(-1, [
@@ -346,7 +358,7 @@ class InvoicePdf < ToPdf
       ])
 
       table_params = {
-        width: 220,
+        width: 240,
         cell_style: {
           align: :right,
           padding: 0,
@@ -358,7 +370,7 @@ class InvoicePdf < ToPdf
       table(data_iva, table_params) do
         cells.borders = []
         row(-1).size = 13
-        row(0..-1).height = 17
+        row(0..-1).height = 15
       end
     end
   end
@@ -436,5 +448,45 @@ class InvoicePdf < ToPdf
       category: 'Consumidor Final',
       full_address: '',
     }
+  end
+
+  def copy_type_label
+    case @copy_type
+    when :original
+      'ORIGINAL'
+    when :duplicate
+      'DUPLICADO'
+    when :triplicate
+      'TRIPLICADO'
+    else
+      'ORIGINAL'
+    end
+  end
+
+  def self.generate_copy(invoice, copy_type, invoice_data = nil)
+    new(invoice, invoice_data, copy_type).render
+  end
+
+  def self.generate_combined_copies(invoice, invoice_data = nil, copy_type = :duplicate)
+    require 'combine_pdf'
+
+    copies_to_include = case copy_type
+                       when :duplicate
+                         [:original, :duplicate]
+                       when :triplicate
+                         [:original, :duplicate, :triplicate]
+                       else
+                         [:original]
+                       end
+
+    combined_pdf = CombinePDF.new
+
+    copies_to_include.each do |copy|
+      copy_pdf_data = generate_copy(invoice, copy, invoice_data)
+      pdf = CombinePDF.parse(copy_pdf_data)
+      combined_pdf << pdf
+    end
+
+    combined_pdf.to_pdf
   end
 end
