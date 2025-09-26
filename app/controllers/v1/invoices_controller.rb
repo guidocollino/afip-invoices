@@ -91,8 +91,9 @@ module V1
 
     def export
       if @invoice
+        copy_type = params[:copy_type]&.to_sym || :original
         respond_to do |format|
-          format.pdf { send_pdf(@invoice) }
+          format.pdf { send_pdf(@invoice, nil, copy_type) }
         end
       else
         render_not_found
@@ -125,13 +126,20 @@ module V1
       params.permit(:external_id)
     end
 
-    def send_pdf(invoice, invoice_data = nil)
+    def send_pdf(invoice, invoice_data = nil, copy_type = :original)
       invoice_data = Invoice::DataFormatter.new(invoice_data).call if invoice_data
 
-      send_data InvoicePdf.new(invoice, invoice_data).render,
-        filename: 'factura.pdf',
-        type: 'application/pdf',
-        disposition: 'inline'
+      if copy_type == :duplicate || copy_type == :triplicate
+        send_data InvoicePdf.generate_combined_copies(invoice, invoice_data, copy_type),
+          filename: 'factura_completa.pdf',
+          type: 'application/pdf',
+          disposition: 'inline'
+      else
+        send_data InvoicePdf.new(invoice, invoice_data, copy_type).render,
+          filename: 'factura.pdf',
+          type: 'application/pdf',
+          disposition: 'inline'
+      end
     end
 
     def fetch_invoice

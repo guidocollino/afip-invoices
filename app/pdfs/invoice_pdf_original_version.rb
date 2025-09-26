@@ -2,7 +2,7 @@
 
 require 'prawn/qrcode'
 
-class InvoicePdfWithIvaColumns < ToPdf
+class InvoicePdfOriginalVersion < ToPdf
   MINIMUN_POSITION_TO_DISPLAY_NOTE = 130
   MINIMUN_POSITION_TO_DISPLAY_TOTALS = 300
 
