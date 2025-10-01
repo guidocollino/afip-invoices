@@ -54,6 +54,7 @@ class Invoice
         note: @params[:note],
         cbu: @params[:cbu],
         alias: @params[:alias],
+        receipt_comercial_address: @params[:receipt_comercial_address],
       }
     end
 

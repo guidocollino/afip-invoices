@@ -16,7 +16,8 @@ class Invoice
       :recipient_number, :recipient_iva_type_id, :net_amount, :iva_amount, :untaxed_amount,
       :exempt_amount, :tax_amount, :iva, :taxes, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date,
-      :associated_invoices, :items, :bill_number, :note, :cbu, :alias, :cuit, :transmission
+      :associated_invoices, :items, :bill_number, :note, :cbu, :alias, :cuit, :transmission,
+      :receipt_comercial_address
 
     def call
       parameters = basic_message

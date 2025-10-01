@@ -186,7 +186,7 @@ class InvoicePdf < ToPdf
         move_down 10
         field 'CUIT', @invoice_finder[:recipient_number], size: 9
         field 'Ape. y Nom. / Razón Social', recipient[:name].upcase, size: 9
-        field 'Domicilio', recipient[:full_address], size: 9
+        field 'Domicilio', @invoice.receipt_comercial_address.presence || recipient[:full_address], size: 9
       end
 
       bounding_box([310, c], width: 230, height: 60) do
