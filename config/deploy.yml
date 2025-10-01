@@ -35,6 +35,7 @@ env:
   secret:
     - DATABASE_USER
     - DATABASE_PASS
+    - MIGRATE
     - REDIS_URL
     - AUTH_TOKEN
     - ENCRYPTION_SERVICE_SALT
