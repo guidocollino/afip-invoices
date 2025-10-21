@@ -8,6 +8,7 @@ class GeneratedInvoiceRepresenter < OpenStruct
   delegate :id, to: :invoice, prefix: :internal, allow_nil: true
   delegate :token, to: :invoice, allow_nil: true
   delegate :sale_point_id, to: :invoice, allow_nil: true
+  delegate :sale_condition, to: :invoice, allow_nil: true
 
   property :bill
   property :bill_number
@@ -16,6 +17,7 @@ class GeneratedInvoiceRepresenter < OpenStruct
   property :internal_id
   property :render_url
   property :sale_point_id
+  property :sale_condition
   property :token
 
   def initialize(bill:, cae_expiracy:, invoice:)

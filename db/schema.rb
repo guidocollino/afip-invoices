@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_09_30_212337) do
+ActiveRecord::Schema.define(version: 2025_10_21_010039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,6 +85,7 @@ ActiveRecord::Schema.define(version: 2025_09_30_212337) do
     t.string "cbu"
     t.string "alias"
     t.string "receipt_comercial_address"
+    t.string "sale_condition"
     t.index ["bill_type_id", "receipt"], name: "index_invoices_on_bill_type_id_and_receipt"
     t.index ["entity_id"], name: "index_invoices_on_entity_id"
     t.index ["token"], name: "index_invoices_on_token", unique: true

@@ -32,7 +32,7 @@ module V1
       :recipient_number, :net_amount, :iva_amount, :untaxed_amount,
       :exempt_amount, :tax_amount, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date, :note,
-      :cbu, :alias, :transmission, :receipt_comercial_address,
+      :cbu, :alias, :transmission, :receipt_comercial_address, :sale_condition,
       {
         associated_invoices: [ASSOCIATED_INVOICE_PARAMS],
         taxes: [TAX_PARAMS],

@@ -192,6 +192,7 @@ class InvoicePdf < ToPdf
       bounding_box([310, c], width: 230, height: 60) do
         move_down 10
         field 'Condición frente al IVA', recipient[:category], size: 9
+        field 'Condición de Venta', @invoice.sale_condition, size: 9
 
         display_associated_invoices
       end
@@ -293,7 +294,7 @@ class InvoicePdf < ToPdf
   def display_totals
     start_new_page if y < MINIMUN_POSITION_TO_DISPLAY_TOTALS
 
-    footer_starts_in = invoice_is_fce? ? 210 : 200
+    footer_starts_in = cursor - 10
 
     stroke_rectangle [0, footer_starts_in + 10], 540, 120
     data = [['Descripción', 'Alic.%', 'Importe']]
