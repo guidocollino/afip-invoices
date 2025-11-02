@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get :details, on: :collection
       get :export, on: :member
       post :export_preview, on: :collection
+      get :test_preview, on: :collection
     end
 
     get '/bill_types', to: 'static#bill_types'
