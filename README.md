@@ -197,6 +197,67 @@ Podés configurar un nuevo ambiente en Postman o bien [importar](https://learnin
 
 Podés revisar la [documentación dentro de Postman](https://learning.postman.com/docs/publishing-your-api/documenting-your-api/#accessing-doc-views) o abrir el [siguiente link](https://documenter.getpostman.com/view/17046114/TzzHjXM3).
 
+## Probar generación de PDFs con datos de prueba
+
+La aplicación cuenta con un endpoint especial para generar PDFs de facturas con datos aleatorios sin necesidad de conectarse a AFIP. Esto es útil para:
+- Modificar el formato de las facturas sin validar contra AFIP
+- Probar el diseño con diferentes tipos de comprobantes
+- Desarrollar sin necesidad de credenciales de AFIP
+
+### Uso con curl
+
+Ejemplo básico para descargar un PDF de prueba:
+
+```bash
+curl -H "Authorization: Token token=TU_TOKEN_AQUI" \
+  "http://localhost:3001/invoices/test_preview.pdf?items_count=10&bill_type_id=201" \
+  --output factura_test.pdf
+```
+
+### Parámetros disponibles
+
+| Parámetro | Tipo | Descripción | Default | Valores |
+|-----------|------|-------------|---------|---------|
+| `items_count` | Integer | Cantidad de items a mostrar | 5 | 1-100 |
+| `bill_type_id` | String | Tipo de comprobante | Aleatorio | 1 (Factura A), 6 (Factura B), 11 (Factura C), 201 (FCE A), 206 (FCE B), 211 (FCE C) |
+| `has_taxes` | Boolean | Incluir otros tributos además de IVA | false | true, false |
+| `has_associated_invoices` | Boolean | Incluir comprobantes asociados (remitos) | false | true, false |
+| `copy_type` | Symbol | Tipo de copia | original | original, duplicate, triplicate |
+| `recipient_type` | Symbol | Tipo de receptor | company | company, final_consumer |
+
+### Ejemplos de uso
+
+**Factura B con 5 items y consumidor final:**
+```bash
+curl -H "Authorization: Token token=TU_TOKEN_AQUI" \
+  "http://localhost:3001/invoices/test_preview.pdf?items_count=5&bill_type_id=6&recipient_type=final_consumer" \
+  --output factura_b.pdf
+```
+
+**Factura A completa con tributos y remitos asociados:**
+```bash
+curl -H "Authorization: Token token=TU_TOKEN_AQUI" \
+  "http://localhost:3001/invoices/test_preview.pdf?items_count=15&bill_type_id=1&has_taxes=true&has_associated_invoices=true&recipient_type=company" \
+  --output factura_a_completa.pdf
+```
+
+**Duplicado de FCE C:**
+```bash
+curl -H "Authorization: Token token=TU_TOKEN_AQUI" \
+  "http://localhost:3001/invoices/test_preview.pdf?items_count=7&bill_type_id=211&copy_type=duplicate" \
+  --output fce_duplicado.pdf
+```
+
+### Uso desde navegador
+
+Para probar desde el navegador, podés usar una extensión que permita agregar headers personalizados como [ModHeader](https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj):
+
+1. Instalar la extensión ModHeader
+2. Configurar el header: `Authorization: Token token=TU_TOKEN_AQUI`
+3. Navegar a: `http://localhost:3001/invoices/test_preview.pdf?items_count=10&bill_type_id=201`
+
+Alternativamente, podés usar Postman o Insomnia configurando el header de Authorization y descargando el PDF directamente.
+
 ## Diagramas de flujo
 
 ### Crear un nuevo comprobante

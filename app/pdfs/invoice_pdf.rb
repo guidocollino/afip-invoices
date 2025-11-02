@@ -35,7 +35,7 @@ class InvoicePdf < ToPdf
 
     repeat :all, dynamic: true do
       bounding_box [245, 60], width: bounds.width do
-        number_pages 'Hoja <page> de <total>'
+        number_pages 'Pág. <page>/<total>'
       end
     end
 
@@ -45,13 +45,13 @@ class InvoicePdf < ToPdf
   private
 
   def display_copy_type_header
-    bounding_box([0, bounds.top], width: WIDTH, height: 30) do
-      text copy_type_label, 
-           align: :center, 
-           style: :bold, 
-           size: 16,
+    bounding_box([0, TOP], width: WIDTH, height: 30) do
+      text copy_type_label,
+           align: :center,
+           style: :bold,
+           size: 14,
            valign: :center
-      
+
       stroke_bounds
     end
   end
@@ -68,7 +68,7 @@ class InvoicePdf < ToPdf
         at: [1, cursor - 10],
         style: :bold,
         align: :center,
-        size: 24,
+        size: 22,
         width: 48,
         height: 50,
         overflow: :shrink_to_fit,
@@ -78,7 +78,7 @@ class InvoicePdf < ToPdf
       move_down 40
 
       text "COD. #{@invoice.bill_type_id.to_s.rjust(2, '0')}",
-        align: :center, style: :bold, size: 9
+        align: :center, style: :bold, size: 7
 
       stroke_bounds
     end
@@ -90,7 +90,7 @@ class InvoicePdf < ToPdf
           position: :center,
           vposition: :center
       else
-        text @entity.business_name, size: 14, style: :bold, align: :center, valign: :center
+        text @entity.business_name, size: 12, style: :bold, align: :center, valign: :center
       end
     end
 
@@ -100,7 +100,7 @@ class InvoicePdf < ToPdf
         at: [0, cursor - 15],
         style: :bold,
         align: :left,
-        size: 20,
+        size: 18,
         width: 200,
         height: 20,
         overflow: :shrink_to_fit,
@@ -109,25 +109,25 @@ class InvoicePdf < ToPdf
 
       move_down 40
 
-      text_box "Punto de Venta: <font size='11'>#{@invoice_finder[:sale_point_id]}</font>",
+      text_box "Punto de Venta: <font size='9'>#{@invoice_finder[:sale_point_id]}</font>",
         at: [0, cursor],
         style: :bold,
         inline_format: true,
-        size: 10
+        size: 8
 
-      text_box "Comp. Nro: <font size='11'>#{@invoice_finder[:bill_number]}</font>",
+      text_box "Comp. Nro: <font size='9'>#{@invoice_finder[:bill_number]}</font>",
         at: [110, cursor],
         style: :bold,
         inline_format: true,
-        size: 10
+        size: 8
 
       move_down 15
 
-      text_box "Fecha de Emisión: <font size='11'>#{@invoice.emission_date.strftime('%d/%m/%Y')}</font>",
+      text_box "Fecha de Emisión: <font size='9'>#{@invoice.emission_date.strftime('%d/%m/%Y')}</font>",
         at: [0, cursor],
         style: :bold,
         inline_format: true,
-        size: 10
+        size: 8
     end
 
     bounding_box([10, 650 - 35], width: 250, height: 50) do
@@ -184,15 +184,15 @@ class InvoicePdf < ToPdf
       c = cursor
       bounding_box([10, c], width: 540, height: 70) do
         move_down 10
-        field 'CUIT', @invoice_finder[:recipient_number], size: 9
-        field 'Ape. y Nom. / Razón Social', recipient[:name].upcase, size: 9
-        field 'Domicilio', @invoice.receipt_comercial_address.presence || recipient[:full_address], size: 9
+        field 'CUIT', @invoice_finder[:recipient_number], size: 7
+        field 'Ape. y Nom. / Razón Social', recipient[:name].upcase, size: 7
+        field 'Domicilio', @invoice.receipt_comercial_address.presence || recipient[:full_address], size: 7
       end
 
       bounding_box([310, c], width: 230, height: 60) do
         move_down 10
-        field 'Condición frente al IVA', recipient[:category], size: 9
-        field 'Condición de Venta', @invoice.sale_condition, size: 9
+        field 'Condición frente al IVA', recipient[:category], size: 7
+        field 'Condición de Venta', @invoice.sale_condition, size: 7
 
         display_associated_invoices
       end
@@ -214,13 +214,13 @@ class InvoicePdf < ToPdf
       "#{invoice.sale_point_id.to_s.rjust(4, '0')}-#{invoice.bill_number.to_s.rjust(8, '0')}"
     end
 
-    field 'Remito', items.join(', '), size: 9
+    field 'Remito', items.join(', '), size: 7
   end
 
   def display_items_and_totals
     stretchy_cursor = invoice_is_fce? ? 460 - 35 : 480 - 35
 
-    bounding_box([0, stretchy_cursor], width: 540, height: 320) do
+    bounding_box([0, stretchy_cursor], width: 540, height: 330) do
       display_items
 
       display_note if @invoice.note.present?
@@ -259,7 +259,7 @@ class InvoicePdf < ToPdf
 
     table_params = {
       width: 540,
-      cell_style: { size: 9 },
+      cell_style: { size: 7 },
       column_widths: { 1 => 150 },
     }
 
@@ -284,7 +284,7 @@ class InvoicePdf < ToPdf
       formatted_text [
         {
           text: "Nota: #{@invoice.note}",
-          size: 9,
+          size: 7,
           styles: %i[bold italic],
         },
       ]
@@ -296,7 +296,7 @@ class InvoicePdf < ToPdf
 
     footer_starts_in = cursor - 10
 
-    stroke_rectangle [0, footer_starts_in + 10], 540, 120
+    stroke_rectangle [0, footer_starts_in + 10], 540, 100
     data = [['Descripción', 'Alic.%', 'Importe']]
 
     if @taxes.present?
@@ -306,9 +306,9 @@ class InvoicePdf < ToPdf
       end
     end
 
-    bounding_box([10, footer_starts_in], width: 260, height: 110) do
-      text 'Otros Tributos', style: :bold
-      table(data, width: 250, cell_style: { size: 7 }) do
+    bounding_box([10, footer_starts_in], width: 155, height: 90) do
+      text 'Otros Tributos', style: :bold, size: 8
+      table(data, width: 150, cell_style: { size: 5 }) do
         cells.borders = [:bottom]
         row(0).font_style = :bold
         row(0).background_color = 'E3DDDC'
@@ -317,10 +317,38 @@ class InvoicePdf < ToPdf
       move_down 10
       text "Importe Otros Tributos: $ #{@invoice_finder[:tax_amount]}",
         align: :right,
-        size: 8
+        size: 6
     end
 
-    bounding_box([280, footer_starts_in], width: 250, height: 110) do
+    bounding_box([160, footer_starts_in], width: 145, height: 90) do
+      data_iva = []
+
+      if @iva.present?
+        @iva.each do |iva|
+          name = @iva_types.find iva[:id]
+          data_iva.insert(-1, [
+            "IVA #{name}: $",
+            number_with_precision(iva[:total_amount], precision: 2),
+          ])
+        end
+      end
+
+      table_params = {
+        width: 140,
+        cell_style: {
+          align: :right,
+          padding: 0,
+          size: 9,
+          font_style: :bold,
+        },
+      }
+
+      table(data_iva, table_params) do
+        cells.borders = []
+      end
+    end
+
+    bounding_box([315, footer_starts_in], width: 200, height: 90) do
       data_iva = []
 
       data_iva.insert(-1, [
@@ -338,16 +366,6 @@ class InvoicePdf < ToPdf
         number_with_precision(@invoice_finder[:net_amount], precision: 2),
       ])
 
-      if @iva.present?
-        @iva.each do |iva|
-          name = @iva_types.find iva[:id]
-          data_iva.insert(-1, [
-            "IVA #{name}: $",
-            number_with_precision(iva[:total_amount], precision: 2),
-          ])
-        end
-      end
-
       data_iva.insert(-1, [
         'Importe Otros Tributos: $',
         number_with_precision(@invoice_finder[:tax_amount], precision: 2),
@@ -359,33 +377,33 @@ class InvoicePdf < ToPdf
       ])
 
       table_params = {
-        width: 240,
+        width: 195,
         cell_style: {
           align: :right,
           padding: 0,
-          size: 11,
+          size: 9,
           font_style: :bold,
         },
       }
 
       table(data_iva, table_params) do
         cells.borders = []
-        row(-1).size = 13
+        row(-1).size = 11
         row(0..-1).height = 15
       end
     end
   end
 
   def display_footer
-    bounding_box([0, 110], width: 150, height: 150) do
+    bounding_box([0, 75], width: 150, height: 65) do
       encoded_data = Base64.strict_encode64(@invoice.qr_code)
       qr_code_content = "#{URL}?p=#{encoded_data}"
       qr_code = RQRCode::QRCode.new(qr_code_content)
 
-      render_qr_code(qr_code, stroke: false, dot: 1.2)
+      render_qr_code(qr_code, stroke: false, dot: 1)
     end
 
-    bounding_box [bounds.left, 105], height: 40, width: bounds.width do
+    bounding_box [bounds.left, 75], height: 40, width: bounds.width do
       if @invoice_finder[:emission_type] == 'CAE'
         paragraph "CAE N°: #{@invoice_finder[:authorization_code]}", align: :right, style: :bold
         paragraph "Fecha de Vto. de CAE: #{@invoice_finder[:expiracy_date]}", align: :right, style: :bold
