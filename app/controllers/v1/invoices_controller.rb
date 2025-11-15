@@ -2,7 +2,7 @@
 
 module V1
   class InvoicesController < ApplicationController
-    skip_before_action :authenticate, only: [:export]
+    skip_before_action :authenticate, only: [:export, :test_preview]
     before_action :fetch_invoice, only: %i[show export]
 
     ITEM_PARAMS = %i[
@@ -185,13 +185,23 @@ module V1
       params_copy = test_data.dup
       params_copy.delete(:recipient_number)
 
+      entity = Entity.new(
+        cuit: '20-1234567', # dummy CUIT
+        business_name: 'Ferretería Platense Scabuzzo e hijos SRL',
+        comertial_address: '490 1900- La Plata Noreste Calle 80, Buenos Aires',
+        condition_against_iva: 'No aplica',
+        iibb: '1234567890',
+        activity_start_date: Date.today,
+        logo: File.open(Rails.root.join('app/pdfs/logo_test.png')),
+      )
+
       invoice = Invoice.new(
-        entity: @entity,
+        entity: entity,
         emission_date: test_data[:created_at],
         authorization_code: "111111111111",
         receipt: "#{format('%0004d', test_data[:sale_point_id])}-#{format('%008d', test_data[:bill_number])}",
         bill_type_id: test_data[:bill_type_id],
-        logo_url: @entity.logo.to_s,
+        logo_url: entity.logo.to_s,
         note: test_data[:note],
         cbu: test_data[:cbu],
         alias: test_data[:alias],

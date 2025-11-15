@@ -145,7 +145,7 @@ class Invoice
     def validate_iva_net
       reduced = iva.reduce(0) { |sum, tax| sum + tax[:net_amount].to_f }
 
-      return unless (net_amount - reduced).abs > 0.1
+      return unless (net_amount.to_f - reduced).abs > 0.1
 
       @errors << 'Suma de netos de IVA ingresados no compensan el neto del comprobante'
     end
@@ -185,19 +185,19 @@ class Invoice
     end
 
     def validate_net_amount(other_items)
-      return unless (items_total(other_items).round(2) - net_amount).abs > 0.1
+      return unless (items_total(other_items).round(2) - net_amount.to_f).abs > 0.1
 
       @errors << 'El subtotal de los items ingresados no suma el neto gravado'
     end
 
     def validate_exempt_amount(exempt_items)
-      return unless (items_total(exempt_items).round(2) - exempt_amount).abs > 0.1
+      return unless (items_total(exempt_items).round(2) - exempt_amount.to_f).abs > 0.1
 
       @errors << 'La suma de los valores exentos de los items no coincide con el total exento provisto'
     end
 
     def validate_untaxed_amount(untaxed_items)
-      return unless (items_total(untaxed_items).round(2) - untaxed_amount).abs > 0.1
+      return unless (items_total(untaxed_items).round(2) - untaxed_amount.to_f).abs > 0.1
 
       @errors << 'La suma de los valores no gravados de los items no coincide con el total no gravado provisto'
     end

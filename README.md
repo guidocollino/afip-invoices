@@ -209,8 +209,7 @@ La aplicación cuenta con un endpoint especial para generar PDFs de facturas con
 Ejemplo básico para descargar un PDF de prueba:
 
 ```bash
-curl -H "Authorization: Token token=TU_TOKEN_AQUI" \
-  "http://localhost:3001/invoices/test_preview.pdf?items_count=10&bill_type_id=201" \
+curl "http://localhost:3001/invoices/test_preview.pdf?items_count=10&bill_type_id=201" \
   --output factura_test.pdf
 ```
 
