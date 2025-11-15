@@ -83,10 +83,10 @@ class InvoicePdf < ToPdf
       stroke_bounds
     end
 
-    bounding_box([0, header_top], width: 250, height: 70) do
+    bounding_box([0, header_top], width: 250, height: 50) do
       if @invoice.logo_url.present?
         image uploaded_file_path(@invoice.logo_url),
-          fit: [220, 60],
+          fit: [200, 45],
           position: :center,
           vposition: :center
       else
@@ -130,7 +130,7 @@ class InvoicePdf < ToPdf
         size: 8
     end
 
-    bounding_box([10, 650 - 35], width: 250, height: 50) do
+    bounding_box([10, 650 - 15], width: 250, height: 70) do
       field 'Razón social', @entity.business_name
     end
 
@@ -182,16 +182,17 @@ class InvoicePdf < ToPdf
 
     bounding_box([0, cursor + 30], width: 540, height: 60) do
       c = cursor
-      bounding_box([10, c], width: 540, height: 70) do
+      bounding_box([10, c], width: 560, height: 70) do
         move_down 10
         field 'CUIT', @invoice_finder[:recipient_number], size: 7
         field 'Ape. y Nom. / Razón Social', recipient[:name].upcase, size: 7
         field 'Domicilio', @invoice.receipt_comercial_address.presence || recipient[:full_address], size: 7
       end
 
-      bounding_box([310, c], width: 230, height: 60) do
+      bounding_box([360, c], width: 170, height: 60) do
         move_down 10
         field 'Condición frente al IVA', recipient[:category], size: 7
+        move_down 10
         field 'Condición de Venta', @invoice.sale_condition, size: 7
 
         display_associated_invoices
@@ -352,17 +353,7 @@ class InvoicePdf < ToPdf
       data_iva = []
 
       data_iva.insert(-1, [
-        'No Gravado: $',
-        number_with_precision(@invoice_finder[:untaxed_amount], precision: 2),
-      ])
-
-      data_iva.insert(-1, [
-        'Exento: $',
-        number_with_precision(@invoice_finder[:exempt_amount], precision: 2),
-      ])
-
-      data_iva.insert(-1, [
-        'Neto Gravado: $',
+        'Subtotal: $',
         number_with_precision(@invoice_finder[:net_amount], precision: 2),
       ])
 
@@ -373,7 +364,7 @@ class InvoicePdf < ToPdf
 
       data_iva.insert(-1, [
         'Importe Total: $',
-        number_with_precision(@invoice_finder[:total_amount], precision: 2),
+        number_with_precision(@invoice_finder[:net_amount], precision: 2),
       ])
 
       table_params = {
