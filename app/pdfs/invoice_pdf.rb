@@ -134,7 +134,7 @@ class InvoicePdf < ToPdf
       field 'Razón social', @entity.business_name
     end
 
-    bounding_box([10, 635 - 35], width: 260, height: 50) do
+    bounding_box([10, 635 - 35], width: 250, height: 50) do
       field 'Domicilio comercial', @entity.comertial_address
     end
 
@@ -152,14 +152,6 @@ class InvoicePdf < ToPdf
 
     bounding_box([320, 610 - 35], width: 250, height: 50) do
       field 'Fecha de Inicio de Actividades', @entity.activity_start_date.try(:strftime, '%d/%m/%Y')
-    end
-
-    bounding_box([10, 580 - 35], width: 490, height: 50) do
-      field 'Período Facturado Desde', @invoice_finder[:service_from]
-    end
-
-    bounding_box([220, 580 - 35], width: 490, height: 50) do
-      field 'Hasta', @invoice_finder[:service_to]
     end
 
     if @invoice_finder[:due_date]
@@ -295,7 +287,7 @@ class InvoicePdf < ToPdf
   def display_totals
     start_new_page if y < MINIMUN_POSITION_TO_DISPLAY_TOTALS
 
-    footer_starts_in = cursor - 10
+    footer_starts_in = invoice_is_fce? ? 90 : 87
 
     stroke_rectangle [0, footer_starts_in + 10], 540, 100
     data = [['Descripción', 'Alic.%', 'Importe']]
