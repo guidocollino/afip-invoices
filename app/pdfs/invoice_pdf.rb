@@ -154,6 +154,12 @@ class InvoicePdf < ToPdf
       field 'Fecha de Inicio de Actividades', @entity.activity_start_date.try(:strftime, '%d/%m/%Y')
     end
 
+    bounding_box([10, 580 - 35], width: 490, height: 50) do
+    end
+
+    bounding_box([220, 580 - 35], width: 490, height: 50) do
+    end
+
     if @invoice_finder[:due_date]
       bounding_box([340, 580 - 35], width: 490, height: 50) do
         field 'Fecha de Vto. para el pago', @invoice_finder[:due_date]
