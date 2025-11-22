@@ -242,17 +242,14 @@ class InvoicePdf < ToPdf
     ]
 
     @items.each do |item|
-      item_subtotal =
-        item.quantity * item.unit_price * ((100 - item.bonus_percentage) / 100)
-
       data.insert(-1, [
         item.code,
         item.description,
         item.quantity,
         item.metric_unit,
-        number_with_precision(item.unit_price, precision: 2),
+        number_with_precision(price_with_iva(item), precision: 2),
         number_with_precision(item.bonus_percentage, precision: 2),
-        number_with_precision(item_subtotal, precision: 2)
+        number_with_precision(item_subtotal_with_iva(item), precision: 2)
       ])
     end
 
@@ -352,7 +349,7 @@ class InvoicePdf < ToPdf
 
       data_iva.insert(-1, [
         'Subtotal: $',
-        number_with_precision(@invoice_finder[:net_amount], precision: 2),
+        number_with_precision(@invoice_finder[:total_amount], precision: 2),
       ])
 
       data_iva.insert(-1, [
@@ -362,7 +359,7 @@ class InvoicePdf < ToPdf
 
       data_iva.insert(-1, [
         'Importe Total: $',
-        number_with_precision(@invoice_finder[:net_amount], precision: 2),
+        number_with_precision(@invoice_finder[:total_amount], precision: 2),
       ])
 
       table_params = {
@@ -398,6 +395,15 @@ class InvoicePdf < ToPdf
         paragraph "Fecha de Vto. de CAE: #{@invoice_finder[:expiracy_date]}", align: :right, style: :bold
       end
     end
+  end
+
+  def price_with_iva(item)
+    iva_rate = item.iva_aliquot
+    item.unit_price * (1 + iva_rate / 100)
+  end
+
+  def item_subtotal_with_iva(item)
+    item.quantity * price_with_iva(item) * ((100 - item.bonus_percentage) / 100)
   end
 
   def recipient
