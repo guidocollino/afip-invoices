@@ -189,7 +189,7 @@ class InvoicePdf < ToPdf
 
       bounding_box([360, c], width: 170, height: 60) do
         move_down 10
-        field 'Condición frente al IVA', recipient[:category], size: 7
+        field 'Condición frente al IVA', @invoice.recipient_iva_type, size: 7
         move_down 10
         field 'Condición de Venta', @invoice.sale_condition, size: 7
 
@@ -242,14 +242,17 @@ class InvoicePdf < ToPdf
     ]
 
     @items.each do |item|
+      item_subtotal =
+        item.quantity * item.unit_price * ((100 - item.bonus_percentage) / 100)
+
       data.insert(-1, [
         item.code,
         item.description,
         item.quantity,
         item.metric_unit,
-        number_with_precision(price_with_iva(item), precision: 2),
+        number_with_precision(item.unit_price, precision: 2),
         number_with_precision(item.bonus_percentage, precision: 2),
-        number_with_precision(item_subtotal_with_iva(item), precision: 2)
+        number_with_precision(item_subtotal, precision: 2)
       ])
     end
 
@@ -395,15 +398,6 @@ class InvoicePdf < ToPdf
         paragraph "Fecha de Vto. de CAE: #{@invoice_finder[:expiracy_date]}", align: :right, style: :bold
       end
     end
-  end
-
-  def price_with_iva(item)
-    iva_rate = item.iva_aliquot
-    item.unit_price * (1 + iva_rate / 100)
-  end
-
-  def item_subtotal_with_iva(item)
-    item.quantity * price_with_iva(item) * ((100 - item.bonus_percentage) / 100)
   end
 
   def recipient
