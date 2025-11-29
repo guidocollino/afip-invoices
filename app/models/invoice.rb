@@ -11,6 +11,23 @@ class Invoice < ApplicationRecord
   has_many :associated_invoices, dependent: :destroy
   has_many :items, class_name: 'InvoiceItem', dependent: :destroy
 
+  RECIPIENT_IVA_TYPES = {
+    1 => 'IVA Responsable Inscripto',
+    4 => 'IVA Sujeto Exento',
+    5 => 'Consumidor Final',
+    6 => 'Responsable Monotributo',
+    8 => 'Proveedor del Exterior',
+    9 => 'Cliente del Exterior',
+    10 => 'IVA Liberado – Ley Nº 19.640',
+    11 => 'IVA Responsable Inscripto – Agente de Percepción',
+    13 => 'Monotributista Social',
+    15 => 'IVA No Alcanzado'
+  }.freeze
+
+  def recipient_iva_type
+    RECIPIENT_IVA_TYPES[recipient_iva_type_id] || '-'
+  end
+
   def qr_code
     invoice = Invoice::Finder.new(invoice: self, entity: entity).run
     # Version of the format of the bill (1 character)
