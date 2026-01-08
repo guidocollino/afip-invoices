@@ -13,6 +13,7 @@ module V1
       code
       metric_unit
       iva_aliquot_id
+      iva_amount
     ].freeze
 
     ASSOCIATED_INVOICE_PARAMS = %i[
@@ -220,6 +221,7 @@ module V1
           bonus_percentage: item[:bonus_percentage] || 0,
           metric_unit: item[:metric_unit] || Invoice::Creator::DEFAULT_ITEM_UNIT,
           iva_aliquot_id: item[:iva_aliquot_id],
+          iva_amount: item[:iva_amount] || 0,
         )
       end
 

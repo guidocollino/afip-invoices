@@ -70,6 +70,7 @@ class Invoice
         bonus_percentage: item[:bonus_percentage] || 0,
         metric_unit: item[:metric_unit] || DEFAULT_ITEM_UNIT,
         iva_aliquot_id: item[:iva_aliquot_id],
+        iva_amount: item[:iva_amount] || 0,
       }
     end
 

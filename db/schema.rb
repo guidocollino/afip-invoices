@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_10_21_010039) do
+ActiveRecord::Schema.define(version: 2026_01_08_001827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 2025_10_21_010039) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "iva_aliquot_id", null: false
+    t.float "iva_amount", default: 0.0
     t.index ["invoice_id"], name: "index_invoice_items_on_invoice_id"
   end
 
@@ -86,6 +87,7 @@ ActiveRecord::Schema.define(version: 2025_10_21_010039) do
     t.string "alias"
     t.string "receipt_comercial_address"
     t.string "sale_condition"
+    t.integer "recipient_iva_type_id"
     t.index ["bill_type_id", "receipt"], name: "index_invoices_on_bill_type_id_and_receipt"
     t.index ["entity_id"], name: "index_invoices_on_entity_id"
     t.index ["token"], name: "index_invoices_on_token", unique: true
