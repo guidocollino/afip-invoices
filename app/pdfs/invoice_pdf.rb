@@ -242,15 +242,16 @@ class InvoicePdf < ToPdf
     ]
 
     @items.each do |item|
+      item_price = item.unit_price + item.iva_amount
       item_subtotal =
-        item.quantity * item.unit_price * ((100 - item.bonus_percentage) / 100)
+        item.quantity * item_price * ((100 - item.bonus_percentage) / 100)
 
       data.insert(-1, [
         item.code,
         item.description,
         item.quantity,
         item.metric_unit,
-        number_with_precision(item.unit_price, precision: 2),
+        number_with_precision(item_price, precision: 2),
         number_with_precision(item.bonus_percentage, precision: 2),
         number_with_precision(item_subtotal, precision: 2)
       ])

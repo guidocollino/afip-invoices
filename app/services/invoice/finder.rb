@@ -53,6 +53,7 @@ class Invoice
           total: item.total,
           bonus_amount: item.bonus_amount,
           bonus_percentage: item.bonus_percentage,
+          iva_amount: item.iva_amount
         }
       end
     end
