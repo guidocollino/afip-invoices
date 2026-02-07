@@ -75,7 +75,7 @@ class Invoice
     end
 
     def format_amount(amount)
-      Integer(amount.to_f * 100) / 100.0
+      (amount.to_f * 100).round / 100.0
     end
 
     def add_associated_invoices(parameters)
