@@ -219,13 +219,13 @@ class InvoicePdf < ToPdf
   def display_items_and_totals
     stretchy_cursor = invoice_is_fce? ? 460 - 35 : 480 - 35
 
-    move_cursor_to stretchy_cursor
+    bounding_box([0, stretchy_cursor], width: 540, height: 330) do
+      display_items
 
-    display_items
+      display_note if @invoice.note.present?
 
-    display_note if @invoice.note.present?
-
-    display_totals
+      display_totals
+    end
   end
 
   def display_items
