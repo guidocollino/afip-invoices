@@ -27,7 +27,7 @@ class InvoicePdf < ToPdf
     @items = invoice.items
     @items = @items.order(:id) if invoice.persisted?
 
-    repeat :all do
+    repeat :all, dynamic: true do
       display_copy_type_header
       display_header
       display_footer if @invoice.authorization_code?
