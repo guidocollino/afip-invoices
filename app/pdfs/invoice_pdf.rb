@@ -27,7 +27,7 @@ class InvoicePdf < ToPdf
     @items = invoice.items
     @items = @items.order(:id) if invoice.persisted?
 
-    repeat :all do
+    repeat :all, dynamic: true do
       display_copy_type_header
       display_header
       display_footer if @invoice.authorization_code?
@@ -35,7 +35,7 @@ class InvoicePdf < ToPdf
 
     repeat :all, dynamic: true do
       bounding_box [245, 60], width: bounds.width do
-        number_pages 'Pág. <page>/<total>'
+        text "Pág. #{page_number}/#{page_count}"
       end
     end
 
@@ -178,16 +178,16 @@ class InvoicePdf < ToPdf
       end
     end
 
-    bounding_box([0, cursor + 30], width: 540, height: 60) do
+    bounding_box([0, cursor + 30], width: 540, height: 80) do
       c = cursor
-      bounding_box([10, c], width: 560, height: 70) do
+      bounding_box([10, c], width: 560, height: 80) do
         move_down 10
         field 'CUIT', @invoice_finder[:recipient_number], size: 7
         field 'Ape. y Nom. / Razón Social', recipient[:name].upcase, size: 7
         field 'Domicilio', @invoice.receipt_comercial_address.presence || recipient[:full_address], size: 7
       end
 
-      bounding_box([360, c], width: 170, height: 60) do
+      bounding_box([360, c], width: 170, height: 80) do
         move_down 10
         field 'Condición frente al IVA', @invoice.recipient_iva_type, size: 7
         move_down 10
