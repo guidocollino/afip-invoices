@@ -34,6 +34,7 @@ module V1
       :exempt_amount, :tax_amount, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date, :note,
       :cbu, :alias, :transmission, :receipt_comercial_address, :sale_condition,
+      :sale_condition_detail, :purchase_order,
       {
         associated_invoices: [ASSOCIATED_INVOICE_PARAMS],
         taxes: [TAX_PARAMS],
@@ -208,6 +209,8 @@ module V1
         alias: test_data[:alias],
         receipt_comercial_address: test_data[:receipt_comercial_address],
         sale_condition: test_data[:sale_condition],
+        sale_condition_detail: test_data[:sale_condition_detail],
+        purchase_order: test_data[:purchase_order],
       )
 
       invoice.recipient = generator.generate_recipient_data
