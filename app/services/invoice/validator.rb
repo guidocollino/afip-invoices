@@ -10,7 +10,7 @@ class Invoice
       :exempt_amount, :tax_amount, :iva, :taxes, :bill_type_id, :created_at,
       :total_amount, :service_from, :service_to, :due_date,
       :associated_invoices, :items, :note, :cbu, :alias, :transmission, :receipt_comercial_address,
-      :sale_condition
+      :sale_condition, :sale_condition_detail, :purchase_order
 
     def call
       @errors = []
