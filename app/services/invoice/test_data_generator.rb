@@ -96,6 +96,8 @@ class Invoice
         alias: is_fce? ? generate_alias : nil,
         receipt_comercial_address: @recipient_type == :final_consumer ? nil : generate_address,
         sale_condition: SALE_CONDITIONS.sample,
+        sale_condition_detail: ['30 dias F.P.F.', 'Contado', '60 dias', ''].sample,
+        purchase_order: ['115/2026', 'OC-2026-0042', ''].sample,
         associated_invoices: @has_associated_invoices ? generate_associated_invoices : [],
         taxes: taxes_data,
         iva: iva_data[:iva_details],

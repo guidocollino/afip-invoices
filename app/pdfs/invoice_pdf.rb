@@ -294,9 +294,11 @@ class InvoicePdf < ToPdf
   def display_totals
     start_new_page if y < MINIMUN_POSITION_TO_DISPLAY_TOTALS
 
-    footer_starts_in = invoice_is_fce? ? 90 : 87
+    base = invoice_is_fce? ? 90 : 87
+    extra = 25
+    footer_starts_in = base + extra
 
-    stroke_rectangle [0, footer_starts_in + 10], 540, 100
+    stroke_rectangle [0, footer_starts_in + 10], 540, 100 + extra
     data = [['Descripción', 'Alic.%', 'Importe']]
 
     if @taxes.present?
@@ -381,6 +383,18 @@ class InvoicePdf < ToPdf
         row(-1).size = 11
         row(0..-1).height = 15
       end
+    end
+
+    display_additional_info(footer_starts_in - 75)
+  end
+
+  def display_additional_info(info_y)
+    amount_text = Invoice::AmountInWords.new(@invoice_finder[:total_amount].to_f).call
+
+    bounding_box([10, info_y], width: 520, height: 45) do
+      field 'Son pesos', amount_text.sub('Son pesos ', ''), size: 7
+      field 'Condición de venta', @invoice.sale_condition_detail, size: 7 if @invoice.sale_condition_detail.present?
+      field 'Orden de compra', @invoice.purchase_order, size: 7 if @invoice.purchase_order.present?
     end
   end
 

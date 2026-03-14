@@ -56,7 +56,9 @@ class Invoice
         alias: @params[:alias],
         receipt_comercial_address: @params[:receipt_comercial_address],
         sale_condition: @params[:sale_condition],
-        recipient_iva_type_id: @params[:recipient_iva_type_id]
+        recipient_iva_type_id: @params[:recipient_iva_type_id],
+        sale_condition_detail: @params[:sale_condition_detail],
+        purchase_order: @params[:purchase_order]
       }
     end
 

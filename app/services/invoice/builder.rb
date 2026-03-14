@@ -39,6 +39,8 @@ class Invoice
         note: @params[:note],
         cbu: @params[:cbu],
         alias: @params[:alias],
+        sale_condition_detail: @params[:sale_condition_detail],
+        purchase_order: @params[:purchase_order],
       )
     end
 
