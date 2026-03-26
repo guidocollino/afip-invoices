@@ -185,7 +185,9 @@ class Invoice
     end
 
     def validate_net_amount(other_items)
-      return unless (items_total(other_items).round(2) - net_amount.to_f).abs > 1.0
+      total = items_total(other_items).round(2)
+      tolerance = [1.0, total.abs * 0.0001].max
+      return unless (total - net_amount.to_f).abs > tolerance
 
       @errors << 'El subtotal de los items ingresados no suma el neto gravado'
     end
